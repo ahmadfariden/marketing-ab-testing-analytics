@@ -1,0 +1,27 @@
+# DuckDB database (dibangun ulang dari raw data lewat sql/02_data_collection.sql)
+*.duckdb.exe
+*.duckdb.wal
+
+# Raw data: default diabaikan. Putuskan & catat di README apakah file kecil/lisensi mengizinkan di-commit.
+data/raw/*.csv
+
+# Parquet besar di layer processed diabaikan; hasil gate KPI tetap di-commit
+data/processed/*.parquet
+!data/processed/14_kpi_crosscheck.parquet
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# OS / editor / Office temp
+.DS_Store
+Thumbs.db
+.vscode/
+~$*
+
+# DuckDB CLI binary (download terpisah, jangan di-commit)
+duckdb.exe
