@@ -1,6 +1,6 @@
 # Assumptions & Cleaning Rules
 
-> Dokumen hidup: diperbarui setiap tahap. Versi ini mencakup Tahap 2–5.
+> Dokumen hidup: diperbarui setiap tahap. Versi ini mencakup Tahap 2–6.
 > Keputusan statistik formal (D1–D9) dikunci di Tahap 6 dan dicatat di `docs/methodology.md`.
 
 ## A. Asumsi sumber data dan desain eksperimen
@@ -50,16 +50,16 @@ has_valid_time     = hari valid AND jam bilangan bulat 0–23
 - Tidak ada baris dihapus, tidak ada imputasi, tidak ada winsorizing atau pembuangan outlier pada `total_ads` (maks 2.065 vs P99 202). Ekor panjang ditangani lewat bucket berbasis kuantil (D4), bukan dengan membuang data.
 - Tidak ada perubahan nilai `test_group` dan `converted` (diverifikasi per baris terhadap raw: 0 selisih).
 
-## C. Asumsi analitik dan butir terbuka (diselesaikan di Tahap 6, sebelum `kpi-lock`)
+## C. Asumsi analitik dan butir keputusan (seluruhnya diselesaikan di Tahap 6, sebelum `kpi-lock`)
 
 | ID | Butir | Sumber | Status |
 |---|---|---|---|
-| C-01 | **Bucket paparan (D4):** batas P50 = 13, P75 = 27, P90 = 57, P99 = 202 dihitung dari populasi gabungan tanpa `converted`; angka resmi dicatat dan dikunci di Tahap 6 | Tahap 5 (A7a) | Menunggu penguncian |
-| C-02 | **Sel kecil struktural:** bucket `b5_gt_p99` × `psa` = 250 user (< 500, D5). Terjadi karena 4% × 1% × 588.101 ≈ 235. Opsi: (1) pertahankan lima bucket sesuai D4 dan tandai sel ini `is_small_segment` sesuai D5, atau (2) gabungkan b4 dan b5 menjadi satu bucket di atas P90 sebelum lock. **Usulan:** opsi (1), karena D4 dan D5 sudah menjawab situasi ini tanpa perlu mengubah definisi | Tahap 5 (A7b) | **Terbuka** |
-| C-03 | **Family Holm blok waktu (D5 vs D6):** blok 00–05 × `psa` hanya 1 konversi (kena D5). Putuskan apakah family Holm tetap 4 atau menjadi 3. **Usulan:** tetap 4 (lebih konservatif, konsisten dengan teks D6) | Tahap 4 (OBS-04) | **Terbuka** |
-| C-04 | **CI deskriptif per jam:** sel `psa` dengan konversi sangat sedikit atau nol tidak cocok untuk CI Wald. **Usulan:** interval Wilson untuk analisis jam di Tahap 11 | Tahap 4 (OBS-03b) | **Terbuka** |
-| C-05 | Ambang D5 (< 500 user atau < 30 konversi) dan ambang praktis D8 (0,5 poin persentase) adalah **asumsi**, bukan fakta bisnis | Roadmap | Dikunci di Tahap 6 |
-| C-06 | D3 dicatat **tidak berlaku** di `methodology.md` (0 duplikat); sensitivitas "eksklusi duplikat" di Tahap 8 akan identik dengan hasil utama | Tahap 4 (DQ-04) | Dicatat di Tahap 6 |
+| C-01 | **Bucket paparan (D4):** batas P50 = 13, P75 = 27, P90 = 57, P99 = 202 dihitung dari populasi gabungan tanpa `converted`; angka resmi dicatat dan dikunci di Tahap 6 | Tahap 5 (A7a) | Terkunci di Tahap 6 (D4); diverifikasi independen dari raw (L03) |
+| C-02 | **Sel kecil struktural:** bucket `b5_gt_p99` × `psa` = 250 user (< 500, D5). Terjadi karena 4% × 1% × 588.101 ≈ 235. Opsi: (1) pertahankan lima bucket sesuai D4 dan tandai sel ini `is_small_segment` sesuai D5, atau (2) gabungkan b4 dan b5 menjadi satu bucket di atas P90 sebelum lock. **Usulan:** opsi (1), karena D4 dan D5 sudah menjawab situasi ini tanpa perlu mengubah definisi | Tahap 5 (A7b) | Diputuskan: opsi (1) = K1 di `methodology.md` |
+| C-03 | **Family Holm blok waktu (D5 vs D6):** blok 00–05 × `psa` hanya 1 konversi (kena D5). Putuskan apakah family Holm tetap 4 atau menjadi 3. **Usulan:** tetap 4 (lebih konservatif, konsisten dengan teks D6) | Tahap 4 (OBS-04) | Diputuskan: family tetap 4 = K2 di `methodology.md` |
+| C-04 | **CI deskriptif per jam:** sel `psa` dengan konversi sangat sedikit atau nol tidak cocok untuk CI Wald. **Usulan:** interval Wilson untuk analisis jam di Tahap 11 | Tahap 4 (OBS-03b) | Diputuskan: interval Wilson = K3 di `methodology.md` |
+| C-05 | Ambang D5 (< 500 user atau < 30 konversi) dan ambang praktis D8 (0,5 poin persentase) adalah **asumsi**, bukan fakta bisnis | Roadmap | Terkunci di Tahap 6 (D5, D8) |
+| C-06 | D3 dicatat **tidak berlaku** di `methodology.md` (0 duplikat); sensitivitas "eksklusi duplikat" di Tahap 8 akan identik dengan hasil utama | Tahap 4 (DQ-04) | Dicatat di Tahap 6: D3 tidak berlaku (L01, L02 PASS) |
 
 ## D. Keterbatasan yang terdokumentasi sejauh ini
 
@@ -78,3 +78,4 @@ has_valid_time     = hari valid AND jam bilangan bulat 0–23
 | 3 | Asumsi desain eksperimen (A-01, A-02, A-04) |
 | 4 | Verifikasi A-02, A-03; butir terbuka C-03, C-04 |
 | 5 | Aturan cleaning R01–R12; butir C-01, C-02, C-05, C-06 |
+| 6 | Semua butir C-01 sampai C-06 diselesaikan dan dikunci; keputusan dan klarifikasi K1–K5 dicatat di `docs/methodology.md` |
