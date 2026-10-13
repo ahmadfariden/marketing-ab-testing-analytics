@@ -1,6 +1,7 @@
 # DuckDB database (dibangun ulang dari raw data lewat sql/02_data_collection.sql)
 *.duckdb.exe
 *.duckdb.wal
+*.ab_testing.duckdb
 
 # Raw data: default diabaikan. Putuskan & catat di README apakah file kecil/lisensi mengizinkan di-commit.
 data/raw/*.csv
@@ -25,3 +26,8 @@ Thumbs.db
 
 # DuckDB CLI binary (download terpisah, jangan di-commit)
 duckdb.exe
+
+# Database DuckDB lokal dan log output
+*.duckdb
+*.duckdb.wal
+*_output.txt
