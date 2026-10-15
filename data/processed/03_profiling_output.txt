@@ -1,0 +1,210 @@
+﻿|          section          |
+|---------------------------|
+| 1. Jumlah baris dan kolom |
+| n_rows | n_columns |
+|-------:|----------:|
+| 588101 | 7         |
+|           section           |
+|-----------------------------|
+| 2. Missing values per kolom |
+|  column_name  | n_rows | n_null | n_empty_string | n_missing | pct_missing |
+|---------------|-------:|-------:|---------------:|----------:|------------:|
+| column0       | 588101 | 0      | 0              | 0         | 0.0         |
+| user id       | 588101 | 0      | 0              | 0         | 0.0         |
+| test group    | 588101 | 0      | 0              | 0         | 0.0         |
+| converted     | 588101 | 0      | 0              | 0         | 0.0         |
+| total ads     | 588101 | 0      | 0              | 0         | 0.0         |
+| most ads day  | 588101 | 0      | 0              | 0         | 0.0         |
+| most ads hour | 588101 | 0      | 0              | 0         | 0.0         |
+|             section             |
+|---------------------------------|
+| 3. Row index dan format user id |
+| n_rows | n_distinct_row_index | n_row_index_cast_fail | min_row_index | max_row_index | is_row_index_contiguous | n_user_id_cast_fail | min_user_id | max_user_id |
+|-------:|---------------------:|----------------------:|--------------:|--------------:|-------------------------|--------------------:|------------:|------------:|
+| 588101 | 588101               | 0                     | 0             | 588100        | true                    | 0                   | 900000      | 1654483     |
+|            section             |
+|--------------------------------|
+| 4a. Ringkasan keunikan user_id |
+| n_rows | n_missing_user_id | n_distinct_user_ids | n_user_ids_with_dups | n_rows_in_dup_user_ids |
+|-------:|------------------:|--------------------:|---------------------:|-----------------------:|
+| 588101 | 0                 | 588101              | 0                    | 0                      |
+|                       section                       |
+|-----------------------------------------------------|
+| 4b. Duplikasi per kategori (a/b/c sesuai aturan D3) |
+|       dup_category       | n_user_ids | n_rows | n_excess_rows |
+|--------------------------|-----------:|-------:|--------------:|
+| a_full_duplicate         | 0          | 0      | 0             |
+| b_same_group_diff_values | 0          | 0      | 0             |
+| c_group_conflict         | 0          | 0      | 0             |
+|                                  section                                   |
+|----------------------------------------------------------------------------|
+| 4c. Contoh baris duplikat (maks 5 user_id; kosong jika tidak ada duplikat) |
+| row_index | user_id_raw | test_group | converted_raw | total_ads_raw | day_raw | hour_raw | dup_category |
+|----------:|-------------|------------|---------------|---------------|---------|----------|--------------|
+|                      section                      |
+|---------------------------------------------------|
+| 5a. Nilai test group (apa adanya) dan ukuran grup |
+| test_group_raw_value | n_rows | n_distinct_user_ids | pct_of_all_rows |
+|----------------------|-------:|--------------------:|----------------:|
+| ad                   | 564577 | 564577              | 96.0            |
+| psa                  | 23524  | 23524               | 4.0             |
+|                          section                          |
+|-----------------------------------------------------------|
+| 5b. Rasio ukuran grup ad : psa (berdasarkan jumlah baris) |
+| n_rows_ad | n_rows_psa | ratio_ad_to_psa | pct_psa_of_ad_psa |
+|----------:|-----------:|----------------:|------------------:|
+| 564577    | 23524      | 24.0            | 4.0               |
+|         section         |
+|-------------------------|
+| 6. Distribusi converted |
+| converted_raw_value | mapped_boolean | n_rows | pct_of_all_rows |
+|---------------------|----------------|-------:|----------------:|
+| False               | false          | 573258 | 97.4761         |
+| True                | true           | 14843  | 2.5239          |
+|         section         |
+|-------------------------|
+| 7. Distribusi total_ads |
+| test_group_scope | n_rows | n_missing | n_cast_fail | min_ads | max_ads | mean_ads | p50  | p75  | p90  |        p95        |  p99  | n_zero | n_negative | n_non_integer |
+|------------------|-------:|----------:|------------:|--------:|--------:|---------:|-----:|-----:|-----:|------------------:|------:|-------:|-----------:|--------------:|
+| ALL              | 588101 | 0         | 0           | 1.0     | 2065.0  | 24.82    | 13.0 | 27.0 | 57.0 | 88.0              | 202.0 | 0      | 0          | 0             |
+| ad               | 564577 | 0         | 0           | 1.0     | 2065.0  | 24.82    | 13.0 | 27.0 | 56.0 | 87.0              | 201.0 | 0      | 0          | 0             |
+| psa              | 23524  | 0         | 0           | 1.0     | 907.0   | 24.76    | 12.0 | 26.0 | 59.0 | 92.84999999999854 | 206.0 | 0      | 0          | 0             |
+|         section          |
+|--------------------------|
+| 8. Kategori most_ads_day |
+| day_raw_value | is_valid_day_name | n_rows | pct_of_all_rows |
+|---------------|-------------------|-------:|----------------:|
+| Monday        | true              | 87073  | 14.8058         |
+| Tuesday       | true              | 77479  | 13.1744         |
+| Wednesday     | true              | 80908  | 13.7575         |
+| Thursday      | true              | 82982  | 14.1102         |
+| Friday        | true              | 92608  | 15.747          |
+| Saturday      | true              | 81660  | 13.8854         |
+| Sunday        | true              | 85391  | 14.5198         |
+|                         section                         |
+|---------------------------------------------------------|
+| 9. Kategori most_ads_hour (valid = bilangan bulat 0-23) |
+| hour_raw_value | is_valid_hour | n_rows | pct_of_all_rows |
+|----------------|---------------|-------:|----------------:|
+| 0              | true          | 5536   | 0.9413          |
+| 1              | true          | 4802   | 0.8165          |
+| 2              | true          | 5333   | 0.9068          |
+| 3              | true          | 2679   | 0.4555          |
+| 4              | true          | 722    | 0.1228          |
+| 5              | true          | 765    | 0.1301          |
+| 6              | true          | 2068   | 0.3516          |
+| 7              | true          | 6405   | 1.0891          |
+| 8              | true          | 17627  | 2.9973          |
+| 9              | true          | 31004  | 5.2719          |
+| 10             | true          | 38939  | 6.6211          |
+| 11             | true          | 46210  | 7.8575          |
+| 12             | true          | 47298  | 8.0425          |
+| 13             | true          | 47655  | 8.1032          |
+| 14             | true          | 45648  | 7.7619          |
+| 15             | true          | 44683  | 7.5978          |
+| 16             | true          | 37567  | 6.3878          |
+| 17             | true          | 34988  | 5.9493          |
+| 18             | true          | 32323  | 5.4962          |
+| 19             | true          | 30352  | 5.161           |
+| 20             | true          | 28923  | 4.918           |
+| 21             | true          | 29976  | 5.0971          |
+| 22             | true          | 26432  | 4.4945          |
+| 23             | true          | 20166  | 3.429           |
+|           section           |
+|-----------------------------|
+| 10a. Ukuran sel hari x grup |
+| most_ads_day | test_group | n_rows | n_converted | is_small_cell_d5 |
+|--------------|------------|-------:|------------:|------------------|
+| Monday       | ad         | 83571  | 2778        | false            |
+| Monday       | psa        | 3502   | 79          | false            |
+| Tuesday      | ad         | 74572  | 2270        | false            |
+| Tuesday      | psa        | 2907   | 42          | false            |
+| Wednesday    | ad         | 77418  | 1963        | false            |
+| Wednesday    | psa        | 3490   | 55          | false            |
+| Thursday     | ad         | 79077  | 1711        | false            |
+| Thursday     | psa        | 3905   | 79          | false            |
+| Friday       | ad         | 88805  | 1995        | false            |
+| Friday       | psa        | 3803   | 62          | false            |
+| Saturday     | ad         | 78802  | 1679        | false            |
+| Saturday     | psa        | 2858   | 40          | false            |
+| Sunday       | ad         | 82332  | 2027        | false            |
+| Sunday       | psa        | 3059   | 63          | false            |
+|                                   section                                    |
+|------------------------------------------------------------------------------|
+| 10b. Ukuran sel blok waktu x grup (blok dari D4: 00-05, 06-11, 12-17, 18-23) |
+| time_block | test_group | n_rows | n_converted | is_small_cell_d5 |
+|------------|------------|-------:|------------:|------------------|
+| 00-05      | ad         | 19102  | 257         | false            |
+| 00-05      | psa        | 735    | 1           | true             |
+| 06-11      | ad         | 136526 | 2889        | false            |
+| 06-11      | psa        | 5727   | 72          | false            |
+| 12-17      | ad         | 246925 | 6832        | false            |
+| 12-17      | psa        | 10914  | 220         | false            |
+| 18-23      | ad         | 162024 | 4445        | false            |
+| 18-23      | psa        | 6148   | 127         | false            |
+|            section            |
+|-------------------------------|
+| 10c. Ringkasan sel jam x grup |
+| test_group | n_cells | n_small_cells_d5 | min_n_rows | median_n_rows | min_n_converted |
+|------------|--------:|-----------------:|-----------:|--------------:|----------------:|
+| ad         | 24      | 3                | 694        | 28370.5       | 11              |
+| psa        | 24      | 17               | 23         | 1079.0        | 0               |
+|          section           |
+|----------------------------|
+| 10d. Detail sel jam x grup |
+| most_ads_hour | test_group | n_rows | n_converted | is_small_cell_d5 |
+|--------------:|------------|-------:|------------:|------------------|
+| 0.0           | ad         | 5309   | 102         | false            |
+| 0.0           | psa        | 227    | 0           | true             |
+| 1.0           | ad         | 4615   | 62          | false            |
+| 1.0           | psa        | 187    | 0           | true             |
+| 2.0           | ad         | 5152   | 39          | false            |
+| 2.0           | psa        | 181    | 0           | true             |
+| 3.0           | ad         | 2590   | 27          | true             |
+| 3.0           | psa        | 89     | 1           | true             |
+| 4.0           | ad         | 694    | 11          | true             |
+| 4.0           | psa        | 28     | 0           | true             |
+| 5.0           | ad         | 742    | 16          | true             |
+| 5.0           | psa        | 23     | 0           | true             |
+| 6.0           | ad         | 1985   | 46          | false            |
+| 6.0           | psa        | 83     | 0           | true             |
+| 7.0           | ad         | 6168   | 114         | false            |
+| 7.0           | psa        | 237    | 2           | true             |
+| 8.0           | ad         | 16968  | 337         | false            |
+| 8.0           | psa        | 659    | 7           | true             |
+| 9.0           | ad         | 29802  | 582         | false            |
+| 9.0           | psa        | 1202   | 13          | true             |
+| 10.0          | ad         | 37454  | 818         | false            |
+| 10.0          | psa        | 1485   | 20          | true             |
+| 11.0          | ad         | 44149  | 992         | false            |
+| 11.0          | psa        | 2061   | 30          | false            |
+| 12.0          | ad         | 45238  | 1092        | false            |
+| 12.0          | psa        | 2060   | 35          | false            |
+| 13.0          | ad         | 45485  | 1140        | false            |
+| 13.0          | psa        | 2170   | 36          | false            |
+| 14.0          | ad         | 43779  | 1251        | false            |
+| 14.0          | psa        | 1869   | 30          | false            |
+| 15.0          | ad         | 42855  | 1279        | false            |
+| 15.0          | psa        | 1828   | 46          | false            |
+| 16.0          | ad         | 35963  | 1111        | false            |
+| 16.0          | psa        | 1604   | 45          | false            |
+| 17.0          | ad         | 33605  | 959         | false            |
+| 17.0          | psa        | 1383   | 28          | true             |
+| 18.0          | ad         | 31052  | 853         | false            |
+| 18.0          | psa        | 1271   | 32          | false            |
+| 19.0          | ad         | 29169  | 782         | false            |
+| 19.0          | psa        | 1183   | 29          | true             |
+| 20.0          | ad         | 27846  | 843         | false            |
+| 20.0          | psa        | 1077   | 19          | true             |
+| 21.0          | ad         | 28895  | 843         | false            |
+| 21.0          | psa        | 1081   | 24          | true             |
+| 22.0          | ad         | 25515  | 675         | false            |
+| 22.0          | psa        | 917    | 15          | true             |
+| 23.0          | ad         | 19547  | 449         | false            |
+| 23.0          | psa        | 619    | 8           | true             |
+|                 section                  |
+|------------------------------------------|
+| 11. Ringkasan populasi awal (informatif) |
+| raw_rows | rows_missing_user_id | rows_invalid_group | rows_invalid_converted | rows_in_dup_user_ids | rows_in_group_conflict_user_ids | rows_without_valid_exposure | rows_invalid_day | rows_invalid_hour | rows_no_core_issue |
+|---------:|---------------------:|-------------------:|-----------------------:|---------------------:|--------------------------------:|----------------------------:|-----------------:|------------------:|-------------------:|
+| 588101   | 0                    | 0                  | 0                      | 0                    | 0                               | 0                           | 0                | 0                 | 588101             |

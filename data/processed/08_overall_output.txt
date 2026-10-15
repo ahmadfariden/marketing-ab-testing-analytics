@@ -1,0 +1,66 @@
+﻿|                      section                      |
+|---------------------------------------------------|
+| P1. Performa per grup (Valid Analysis Population) |
+| test_group | n_users | n_converted | n_not_converted | conversion_rate_pct | pct_of_users | pct_of_conversions |
+|------------|--------:|------------:|----------------:|--------------------:|-------------:|-------------------:|
+| ad         | 564577  | 14423       | 550154          | 2.5547              | 96.0         | 97.17              |
+| psa        | 23524   | 420         | 23104           | 1.7854              | 4.0          | 2.83               |
+| ALL        | 588101  | 14843       | 573258          | 2.5239              | 100.0        | 100.0              |
+|                 section                  |
+|------------------------------------------|
+| P2. Efek: lift, CI 95%, p-value, dan MDE |
+| cr_ad_pct | cr_psa_pct | abs_lift_pp | ci95_low_pp | ci95_high_pp | rel_lift_pct | rel_ci95_low_pct | rel_ci95_high_pct |   p_value_two_sided   | mde_pp | mde_rel_pct |
+|----------:|-----------:|------------:|------------:|-------------:|-------------:|-----------------:|------------------:|----------------------:|-------:|------------:|
+| 2.5547    | 1.7854     | 0.7692      | 0.5951      | 0.9434       | 43.09        | 29.97            | 57.52             | 1.705280716155978e-13 | 0.2475 | 13.86       |
+|                    section                     |
+|------------------------------------------------|
+| P2b. Posisi CI terhadap MDE dan ambang D8 (pp) |
+| mde_pp | abs_lift_pp | abs_lift_per_mde | ci_low_above_mde |           vs_threshold_0_25            |            vs_threshold_0_5            |            vs_threshold_1_0            |
+|-------:|------------:|-----------------:|------------------|----------------------------------------|----------------------------------------|----------------------------------------|
+| 0.2475 | 0.7692      | 3.11             | true             | efek >= ambang (CI sepenuhnya di atas) | efek >= ambang (CI sepenuhnya di atas) | efek < ambang (CI sepenuhnya di bawah) |
+|                                  section                                   |
+|----------------------------------------------------------------------------|
+| P3. Konversi tambahan (BERSYARAT: hanya bermakna jika randomization valid) |
+|  n_ad  | observed_conv_ad | expected_conv_if_psa_rate | incremental_conv | incremental_conv_ci_low | incremental_conv_ci_high | pct_of_ad_conv_above_psa_rate | users_per_incremental_conv | users_per_inc_conv_low | users_per_inc_conv_high |
+|-------:|-----------------:|--------------------------:|-----------------:|------------------------:|-------------------------:|------------------------------:|---------------------------:|-----------------------:|------------------------:|
+| 564577 | 14423            | 10080                     | 4343             | 3360                    | 5326                     | 30.1                          | 130                        | 106                    | 168                     |
+|                section                |
+|---------------------------------------|
+| P4. Scorecard kekuatan bukti (D8, D9) |
+| no |                            pertanyaan                            |                                               bukti                                                |                                          penilaian                                          |
+|---:|------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| 1  | Apakah selisih CR signifikan secara statistik? (D1, D2)          | p = 1.705e-13 (alpha = 0.05)                                                                       | Ya: ada bukti statistik untuk menolak H0                                                    |
+| 2  | Apakah hasil konsisten antar metode? (D2, D3)                    | chi-square, Fisher exact, dan eksklusi duplikat dibandingkan dengan z-test                         | Ya: seluruh metode memberi kesimpulan yang sama                                             |
+| 3  | Apakah efek melampaui ambang practical significance 0,5 pp? (D8) | selisih 0.769 pp, 95% CI 0.595 sampai 0.943 pp                                                     | efek >= ambang (CI sepenuhnya di atas) (ambang adalah asumsi eksplisit, bukan fakta bisnis) |
+| 4  | Apakah desain cukup sensitif? (MDE vs D8)                        | MDE = 0.248 pp vs ambang 0,5 pp                                                                    | Ya: MDE <= ambang, desain cukup sensitif untuk efek seukuran ambang                         |
+| 5  | Apakah asumsi statistik terpenuhi?                               | min(konversi, non-konversi) = 420, frekuensi harapan minimum = 593.7, user unik                    | Ya: aproksimasi normal dan chi-square valid                                                 |
+| 6  | Apakah implementasi uji lolos pemeriksaan otomatis?              | 10 dari 10 pemeriksaan PASS                                                                        | Ya: ALL PASS                                                                                |
+| 7  | Apakah randomization dapat diverifikasi?                         | tidak ada metadata randomization, rasio desain grup tidak tersedia (rasio teramati sekitar 24 : 1) | Tidak: interpretasi efek penugasan grup bersyarat pada randomization yang valid             |
+| 8  | Apakah ada data biaya untuk menilai ROI?                         | tidak ada data biaya atau nilai transaksi                                                          | Tidak: tidak ada klaim ROI, ROAS, atau profit                                               |
+|            section             |
+|--------------------------------|
+| P4b. Kesimpulan (mengikuti D9) |
+|                                                                                                                           kesimpulan                                                                                                                            |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Bukti statistik dan praktis (ambang 0,5 pp) mendukung bahwa CR kelompok ad lebih tinggi daripada psa, dan desain cukup sensitif. Keputusan bisnis tetap bergantung pada dua hal yang tidak dapat dinilai dari data ini: validitas randomization dan data biaya. |
+|                 section                 |
+|-----------------------------------------|
+| P5. Rekonsiliasi dan konsistensi metrik |
+| check_id |                                 check_name                                 |       expected       |        actual        | status |
+|----------|----------------------------------------------------------------------------|---------------------:|---------------------:|--------|
+| O01      | n_ad: clean = Tahap 8                                                      | 564577.0             | 564577.0             | PASS   |
+| O02      | n_psa: clean = Tahap 8                                                     | 23524.0              | 23524.0              | PASS   |
+| O03      | konversi ad: clean = Tahap 8                                               | 14423.0              | 14423.0              | PASS   |
+| O04      | konversi psa: clean = Tahap 8                                              | 420.0                | 420.0                | PASS   |
+| O05      | CR ad: konversi / n = CR Tahap 8                                           | 0.025546559636683747 | 0.025546559636683747 | PASS   |
+| O06      | CR psa: konversi / n = CR Tahap 8                                          | 0.01785410644448223  | 0.01785410644448223  | PASS   |
+| O07      | absolute lift = CR ad - CR psa (hitung ulang dari tabel grup)              | 0.007692453192201517 | 0.007692453192201517 | PASS   |
+| O08      | relative lift = absolute lift / CR psa (hitung ulang)                      | 0.43085064022225833  | 0.43085064022225833  | PASS   |
+| O09      | total user = SUM(user per grup) = jumlah user valid                        | 588101.0             | 588101.0             | PASS   |
+| O10      | total konversi = SUM(konversi per grup) = SUM(is_converted) populasi valid | 14843.0              | 14843.0              | PASS   |
+| O11      | SUM(share_of_users) = 1                                                    | 1.0                  | 1.0                  | PASS   |
+| O12      | SUM(share_of_conversions) = 1                                              | 1.0                  | 1.0                  | PASS   |
+| O13      | konversi tambahan = konversi ad - (CR psa x n_ad)                          | 4342.982145893557    | 4342.982145893556    | PASS   |
+| n_checks | n_pass | n_fail | overall_gate |
+|---------:|-------:|-------:|--------------|
+| 13       | 13     | 0      | ALL PASS     |

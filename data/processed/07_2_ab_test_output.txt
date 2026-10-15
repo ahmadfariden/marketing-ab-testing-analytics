@@ -1,0 +1,125 @@
+﻿|                       section                        |
+|------------------------------------------------------|
+| 0. Self-test macro normal survival (acuan eksternal) |
+|         z          |          ref           |       sql_value        |        rel_err         | status |
+|-------------------:|-----------------------:|-----------------------:|-----------------------:|--------|
+| -2.500000000000000 | 0.9937903346742238     | 0.9937903346742238     | 0.0                    | PASS   |
+| -1.000000000000000 | 0.8413447460685429     | 0.8413447460685428     | 1.3195815743938912e-16 | PASS   |
+| 0.000000000000000  | 0.5                    | 0.5                    | 0.0                    | PASS   |
+| 0.500000000000000  | 0.3085375387259869     | 0.3085375387259869     | 0.0                    | PASS   |
+| 1.000000000000000  | 0.15865525393145707    | 0.15865525393145713    | 3.4988536374118433e-16 | PASS   |
+| 1.959963984540054  | 0.025                  | 0.024999999999999967   | 1.3877787807814457e-15 | PASS   |
+| 2.000000000000000  | 0.022750131948179195   | 0.02275013194817932    | 5.490082016000197e-15  | PASS   |
+| 2.499900000000000  | 0.006211418374944587   | 0.0062114183749445995  | 1.9549583684170974e-15 | PASS   |
+| 2.500100000000000  | 0.006207912714815193   | 0.006207912714815199   | 9.780311748631879e-16  | PASS   |
+| 3.000000000000000  | 0.0013498980316300933  | 0.0013498980316300946  | 9.638080629034686e-16  | PASS   |
+| 4.000000000000000  | 3.167124183311986e-05  | 3.1671241833119924e-05 | 1.925607228275267e-15  | PASS   |
+| 5.000000000000000  | 2.866515718791933e-07  | 2.8665157187919396e-07 | 2.4008738732266947e-15 | PASS   |
+| 7.000000000000000  | 1.279812543885835e-12  | 1.2798125438858352e-12 | 1.57795290178523e-16   | PASS   |
+| 10.000000000000000 | 7.61985302416047e-24   | 7.619853024160527e-24  | 7.520532144240438e-15  | PASS   |
+| 20.000000000000000 | 2.7536241186061556e-89 | 2.753624118606234e-89  | 2.850160820452032e-14  | PASS   |
+|                                section                                 |
+|------------------------------------------------------------------------|
+| A1. Jumlah user, konversi, dan CR per grup (Valid Analysis Population) |
+| test_group | n_users | n_converted | n_not_converted | conversion_rate_pct |
+|------------|--------:|------------:|----------------:|--------------------:|
+| ad         | 564577  | 14423       | 550154          | 2.5547              |
+| psa        | 23524   | 420         | 23104           | 1.7854              |
+|                      section                      |
+|---------------------------------------------------|
+| A2. Absolute dan relative lift (ad dikurangi psa) |
+| cr_ad_pct | cr_psa_pct | abs_lift_pp | rel_lift_pct |
+|----------:|-----------:|------------:|-------------:|
+| 2.5547    | 1.7854     | 0.7692      | 43.09        |
+|                           section                           |
+|-------------------------------------------------------------|
+| A3. Sensitivitas D3: hasil utama vs eksklusi semua duplikat |
+|  n_ad  | n_ad_excl_dup | n_psa | n_psa_excl_dup | conv_ad | conv_ad_excl_dup | conv_psa | conv_psa_excl_dup | abs_lift_pp | abs_lift_pp_excl_dup |           status           |
+|-------:|--------------:|------:|---------------:|--------:|-----------------:|---------:|------------------:|------------:|---------------------:|----------------------------|
+| 564577 | 564577        | 23524 | 23524          | 14423   | 14423            | 420      | 420               | 0.769245    | 0.769245             | IDENTIK (D3 tidak berlaku) |
+|                        section                        |
+|-------------------------------------------------------|
+| A4. Cross-check terhadap validation_summary (Tahap 6) |
+|            check_name            | expected | actual | status |
+|----------------------------------|---------:|-------:|--------|
+| n_ad = validation E05            | 564577   | 564577 | PASS   |
+| n_psa = validation E06           | 23524    | 23524  | PASS   |
+| conv_ad = validation B02         | 14423    | 14423  | PASS   |
+| conv_psa = validation B03        | 420      | 420    | PASS   |
+| n_ad + n_psa = jumlah user valid | 588101   | 588101 | PASS   |
+|                         section                         |
+|---------------------------------------------------------|
+| B1. Uji primer: two-proportion z-test dua arah (D1, D2) |
+| z_pooled |   p_value_two_sided   | abs_lift_pp | ci95_low_pp | ci95_high_pp | rel_lift_pct | rel_ci95_low_pct | rel_ci95_high_pct |     keputusan_statistik     |
+|---------:|----------------------:|------------:|------------:|-------------:|-------------:|-----------------:|------------------:|-----------------------------|
+| 7.3701   | 1.705280716155978e-13 | 0.7692      | 0.5951      | 0.9434       | 43.09        | 29.97            | 57.52             | p < alpha: bukti menolak H0 |
+|                              section                              |
+|-------------------------------------------------------------------|
+| B2. Sensitivitas: chi-square, Fisher exact, dan eksklusi duplikat |
+|                 metode                 | statistik |    p_value_dua_arah    |                   catatan                   |
+|----------------------------------------|----------:|-----------------------:|---------------------------------------------|
+| z-test primer (pooled)                 | 54.318052 | 1.705280716155978e-13  | statistik = z^2                             |
+| Chi-square (tanpa koreksi kontinuitas) | 54.318052 | 1.7052807161560149e-13 | df = 1                                      |
+| Fisher exact (dua arah)                | NULL      | 1.0470720590248623e-14 | odds ratio = 1.4421                         |
+| z-test, eksklusi semua duplikat (D3)   | 54.318052 | 1.705280716155978e-13  | 588101 user vs 588101 user setelah eksklusi |
+|                                 section                                  |
+|--------------------------------------------------------------------------|
+| B3. MDE retrospektif (power 80%, alpha 0,05 dua arah, baseline = CR psa) |
+| baseline_cr_psa_pct |  n_ad  | n_psa | mde_abs_pp | mde_rel_pct_of_cr_psa | mde_approx_pp | power_at_mde | iter_residual |
+|--------------------:|-------:|------:|-----------:|----------------------:|--------------:|-------------:|--------------:|
+| 1.7854              | 564577 | 23524 | 0.2475     | 13.86                 | 0.2469        | 0.800001     | 0.0           |
+|                       section                        |
+|------------------------------------------------------|
+| B4. Practical significance (D8): sensitivitas ambang |
+| ambang_pp | abs_lift_pp | ci_bawah_pp | ci_atas_pp |                verdict                 |
+|----------:|------------:|------------:|-----------:|----------------------------------------|
+| 0.25      | 0.7692      | 0.5951      | 0.9434     | efek >= ambang (CI sepenuhnya di atas) |
+| 0.50      | 0.7692      | 0.5951      | 0.9434     | efek >= ambang (CI sepenuhnya di atas) |
+| 1.00      | 0.7692      | 0.5951      | 0.9434     | efek < ambang (CI sepenuhnya di bawah) |
+|        section         |
+|------------------------|
+| B5. Pemeriksaan asumsi |
+|                           pemeriksaan                           |          nilai           |                        status                        |
+|-----------------------------------------------------------------|--------------------------|------------------------------------------------------|
+| Aproksimasi normal: min(konversi, non-konversi) tiap grup >= 10 | 420                      | terpenuhi                                            |
+| Chi-square: frekuensi harapan sel minimum >= 5                  | 593.72                   | terpenuhi                                            |
+| Independensi per user: user_id unik di populasi valid           | 588101 unik dari 588101  | terpenuhi                                            |
+| Rasio ukuran grup ad : psa (deskriptif)                         | 24.0                     | rasio desain tidak tersedia, SRM tidak dapat dinilai |
+| Randomization                                                   | tidak dapat diverifikasi | limitation: interpretasi efek penugasan bersyarat    |
+|        section        |
+|-----------------------|
+| B6. Interpretasi (D9) |
+|                    topik                    |                                                                                                                        teks                                                                                                                         |
+|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Signifikansi statistik (D1, D2)             | z = 7.370, p = 1.705e-13 (dua arah, alpha = 0.05). p < alpha: ada bukti statistik untuk menolak H0 (CR ad dan psa sama).                                                                                                                            |
+| Ukuran efek                                 | Selisih CR = 0.769 pp (95% CI 0.595 sampai 0.943 pp), relative lift = 43.1% (95% CI 30.0% sampai 57.5%).                                                                                                                                            |
+| MDE retrospektif (K4)                       | MDE = 0.248 pp (power 80%, alpha 0,05) = 13.9% relatif terhadap CR psa. MDE <= ambang D8 (0,5 pp): desain cukup sensitif untuk efek seukuran ambang.                                                                                                |
+| Practical significance (D8), ambang 0.25 pp | efek >= ambang (CI sepenuhnya di atas).                                                                                                                                                                                                             |
+| Practical significance (D8), ambang 0.50 pp | efek >= ambang (CI sepenuhnya di atas).                                                                                                                                                                                                             |
+| Practical significance (D8), ambang 1.00 pp | efek < ambang (CI sepenuhnya di bawah).                                                                                                                                                                                                             |
+| Sensitivitas                                | Chi-square, Fisher exact, dan eksklusi duplikat konsisten dengan hasil primer (kesimpulan signifikan atau tidak signifikan sama).                                                                                                                   |
+| Batasan                                     | Randomization tidak dapat diverifikasi (rasio grup 24.0 : 1, rasio desain tidak tersedia), tidak ada data biaya (tanpa ROI), satu eksperimen dalam satu periode. Selisih CR ditafsirkan sebagai efek penugasan grup hanya jika randomization valid. |
+|                section                |
+|---------------------------------------|
+| B7. Pemeriksaan otomatis (self-check) |
+| check_id |                                check_name                                 |      error_value       | tolerance | status |
+|----------|---------------------------------------------------------------------------|-----------------------:|----------:|--------|
+| C01      | Macro normal survival vs nilai acuan (galat relatif maksimum)             | 2.850160820452032e-14  | 1e-11     | PASS   |
+| C02      | Chi-square = z^2 (galat relatif)                                          | 7.848691714186805e-16  | 1e-09     | PASS   |
+| C03      | p-value chi-square = p-value z-test (galat relatif)                       | 2.1612618463782933e-14 | 1e-09     | PASS   |
+| C04      | Fisher: jumlah probabilitas seluruh tabel = 1 (selisih absolut)           | 1.0669418681885645e-09 | 1e-06     | PASS   |
+| C05      | MDE: residual iterasi fixed-point                                         | 0.0                    | 1e-12     | PASS   |
+| C06      | MDE: power pada delta = MDE vs 80% (selisih absolut)                      | 9.60562226537398e-07   | 0.0001    | PASS   |
+| C07      | MDE: selisih relatif terhadap aproksimasi p1 ~ p0                         | 0.002704509525030051   | 0.05      | PASS   |
+| C08      | D3: z-test tanpa duplikat = z-test primer (selisih absolut)               | 0.0                    | 1e-09     | PASS   |
+| C09      | Kesimpulan signifikan/tidak sama antara Fisher dan z-test (0 = sama)      | 0.0                    | 0.0       | PASS   |
+| C10      | Batas CI: abs_lift berada di antara ci_diff_low dan ci_diff_high (0 = ya) | 0.0                    | 0.0       | PASS   |
+| n_checks | n_pass | n_fail | ab_gate  |
+|---------:|-------:|-------:|----------|
+| 10       | 10     | 0      | ALL PASS |
+|                section                 |
+|----------------------------------------|
+| B8. Verifikasi parquet ab_test_results |
+| n_rows_parquet | n_rows_table | status |
+|---------------:|-------------:|--------|
+| 27             | 27           | MATCH  |

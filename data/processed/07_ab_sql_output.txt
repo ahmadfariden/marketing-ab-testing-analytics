@@ -1,0 +1,35 @@
+﻿|                                section                                 |
+|------------------------------------------------------------------------|
+| A1. Jumlah user, konversi, dan CR per grup (Valid Analysis Population) |
+| test_group | n_users | n_converted | n_not_converted | conversion_rate_pct |
+|------------|--------:|------------:|----------------:|--------------------:|
+| ad         | 564577  | 14423       | 550154          | 2.5547              |
+| psa        | 23524   | 420         | 23104           | 1.7854              |
+|                      section                      |
+|---------------------------------------------------|
+| A2. Absolute dan relative lift (ad dikurangi psa) |
+| cr_ad_pct | cr_psa_pct | abs_lift_pp | rel_lift_pct |
+|----------:|-----------:|------------:|-------------:|
+| 2.5547    | 1.7854     | 0.7692      | 43.09        |
+|                           section                           |
+|-------------------------------------------------------------|
+| A3. Sensitivitas D3: hasil utama vs eksklusi semua duplikat |
+|  n_ad  | n_ad_excl_dup | n_psa | n_psa_excl_dup | conv_ad | conv_ad_excl_dup | conv_psa | conv_psa_excl_dup | abs_lift_pp | abs_lift_pp_excl_dup |           status           |
+|-------:|--------------:|------:|---------------:|--------:|-----------------:|---------:|------------------:|------------:|---------------------:|----------------------------|
+| 564577 | 564577        | 23524 | 23524          | 14423   | 14423            | 420      | 420               | 0.769245    | 0.769245             | IDENTIK (D3 tidak berlaku) |
+|                        section                        |
+|-------------------------------------------------------|
+| A4. Cross-check terhadap validation_summary (Tahap 6) |
+|            check_name            | expected | actual | status |
+|----------------------------------|---------:|-------:|--------|
+| n_ad = validation E05            | 564577   | 564577 | PASS   |
+| n_psa = validation E06           | 23524    | 23524  | PASS   |
+| conv_ad = validation B02         | 14423    | 14423  | PASS   |
+| conv_psa = validation B03        | 420      | 420    | PASS   |
+| n_ad + n_psa = jumlah user valid | 588101   | 588101 | PASS   |
+|                section                |
+|---------------------------------------|
+| A5. Verifikasi parquet ab_sql_results |
+| n_rows_parquet | n_rows_table | status |
+|---------------:|-------------:|--------|
+| 15             | 15           | MATCH  |

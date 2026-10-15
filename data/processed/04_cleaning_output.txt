@@ -1,0 +1,106 @@
+﻿|             section             |
+|---------------------------------|
+| A1. Row count raw = stg = clean |
+| n_raw  | n_stg  | n_clean | status |
+|-------:|-------:|--------:|--------|
+| 588101 | 588101 | 588101  | MATCH  |
+|                section                 |
+|----------------------------------------|
+| A2. Kegagalan cast per kolom (harus 0) |
+| user_id_cast_fail | converted_map_fail | total_ads_cast_fail | most_ads_hour_cast_fail | row_index_cast_fail |
+|------------------:|-------------------:|--------------------:|------------------------:|--------------------:|
+| 0                 | 0                  | 0                   | 0                       | 0                   |
+|                           section                            |
+|--------------------------------------------------------------|
+| A3. test_group dan converted tidak berubah (selisih harus 0) |
+| n_joined_rows | test_group_mismatch | converted_mismatch | raw_true_rows | clean_true_rows | raw_false_rows | clean_false_rows |
+|--------------:|--------------------:|-------------------:|--------------:|----------------:|---------------:|-----------------:|
+| 588101        | 0                   | 0                  | 14843         | 14843           | 573258         | 573258           |
+|                      section                       |
+|----------------------------------------------------|
+| A4. Rekonsiliasi raw -> valid + flagged per alasan |
+|         category         | n_rows | pct_of_raw |
+|--------------------------|-------:|-----------:|
+| (valid)                  | 588101 | 100.0      |
+| TOTAL (harus = raw rows) | 588101 | 100.0      |
+|        section        |
+|-----------------------|
+| A5. Populasi analisis |
+| raw_rows | valid_analysis_population |  n_ad  | n_psa | group_flags_consistent | exposure_population | time_population | distinct_valid_user_ids |
+|---------:|--------------------------:|-------:|------:|------------------------|--------------------:|----------------:|------------------------:|
+| 588101   | 588101                    | 564577 | 23524 | true                   | 588101              | 588101          | 588101                  |
+|     section      |
+|------------------|
+| A6. Cleaning log |
+| rule_id |                                        rule                                         | n_rows_affected |
+|---------|-------------------------------------------------------------------------------------|----------------:|
+| R01     | Cast user id -> BIGINT; rename user_id                                              | 0               |
+| R02     | Map converted True/False -> BOOLEAN (nilai tidak terpetakan = NULL)                 | 0               |
+| R03     | Cast total ads -> INTEGER; rename total_ads (gagal cast = NULL)                     | 0               |
+| R04     | Cast most ads hour -> INTEGER; rename most_ads_hour (gagal cast = NULL)             | 0               |
+| R05     | Rename column0 -> row_index, test group -> test_group, most ads day -> most_ads_day | 588101          |
+| R06     | Eksklusi: user_id kosong                                                            | 0               |
+| R07     | Eksklusi: test_group bukan ad/psa                                                   | 0               |
+| R08     | Eksklusi: converted tidak valid                                                     | 0               |
+| R09     | D3(b): eksklusi user_id di >1 grup                                                  | 0               |
+| R10     | D3(a)(c): baris duplikat tidak terpilih (row_index terkecil dipertahankan)          | 0               |
+| R11     | Tanpa paparan valid (total_ads NULL/negatif); TIDAK dibuang dari Primary KPI        | 0               |
+| R12     | Tanpa hari/jam valid; TIDAK dibuang dari Primary KPI                                | 0               |
+|                                 section                                  |
+|--------------------------------------------------------------------------|
+| A7a. Batas kuantil total_ads (populasi gabungan, valid + exposure valid) |
+| n_exposure_population | p50  | p75  | p90  |  p99  |
+|----------------------:|-----:|-----:|-----:|------:|
+| 588101                | 13.0 | 27.0 | 57.0 | 202.0 |
+|                     section                      |
+|--------------------------------------------------|
+| A7b. Distribusi bucket paparan per grup (n saja) |
+| bucket_label | min_total_ads | max_total_ads |  n_ad  | n_psa | n_total |
+|--------------|--------------:|--------------:|-------:|------:|--------:|
+| b1_le_p50    | 1             | 13            | 286895 | 12601 | 299496  |
+| b2_p50_p75   | 14            | 27            | 137483 | 5274  | 142757  |
+| b3_p75_p90   | 28            | 57            | 85178  | 3224  | 88402   |
+| b4_p90_p99   | 58            | 202           | 49461  | 2175  | 51636   |
+| b5_gt_p99    | 203           | 2065          | 5560   | 250   | 5810    |
+| TOTAL        | 1             | 2065          | 564577 | 23524 | 588101  |
+|                   section                    |
+|----------------------------------------------|
+| A7c. Distribusi blok waktu per grup (n saja) |
+| block_label |  n_ad  | n_psa | n_total |
+|-------------|-------:|------:|--------:|
+| 00-05       | 19102  | 735   | 19837   |
+| 06-11       | 136526 | 5727  | 142253  |
+| 12-17       | 246925 | 10914 | 257839  |
+| 18-23       | 162024 | 6148  | 168172  |
+| TOTAL       | 564577 | 23524 | 588101  |
+|             section             |
+|---------------------------------|
+| A8. Struktur marketing_ab_clean |
+|      column_name       | column_type | null | key  | default | extra |
+|------------------------|-------------|------|------|---------|-------|
+| row_index              | BIGINT      | YES  | NULL | NULL    | NULL  |
+| user_id                | BIGINT      | YES  | NULL | NULL    | NULL  |
+| test_group             | VARCHAR     | YES  | NULL | NULL    | NULL  |
+| converted              | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| total_ads              | INTEGER     | YES  | NULL | NULL    | NULL  |
+| most_ads_day           | VARCHAR     | YES  | NULL | NULL    | NULL  |
+| most_ads_hour          | INTEGER     | YES  | NULL | NULL    | NULL  |
+| is_treatment           | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| is_control             | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| is_converted           | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| dup_row_count          | BIGINT      | YES  | NULL | NULL    | NULL  |
+| flag_duplicate_user_id | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| flag_group_conflict    | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| is_selected_d3         | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| exclusion_reason       | VARCHAR     | YES  | NULL | NULL    | NULL  |
+| is_valid_user          | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| has_valid_exposure     | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| has_valid_time         | BOOLEAN     | YES  | NULL | NULL    | NULL  |
+| exposure_bucket        | VARCHAR     | YES  | NULL | NULL    | NULL  |
+| time_block             | VARCHAR     | YES  | NULL | NULL    | NULL  |
+|        section         |
+|------------------------|
+| A9. Verifikasi parquet |
+| n_rows_parquet | n_rows_table | status |
+|---------------:|-------------:|--------|
+| 588101         | 588101       | MATCH  |
