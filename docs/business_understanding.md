@@ -112,7 +112,7 @@ Dihitung per grup (`ad` dan `psa`) pada Valid Analysis Population (didefinisikan
 
 ## 10. Success Criteria
 
-- Primary KPI dan hasil uji dapat direproduksi dari SQL **dan** notebook cross-check (gate PASS).
+- Primary KPI dan hasil uji dapat direproduksi dari SQL **dan** dari pemeriksaan silang SQL independen yang membaca Parquet (gate PASS).
 - Seluruh KPI dapat direkonsiliasi ke raw data.
 - Dashboard 5 halaman (atau 4 halaman jika Jalur Lanjutan dilewati).
 - Setiap temuan mengikuti kerangka *Finding → Evidence → Implication → Recommendation → Limitation*.

@@ -79,7 +79,7 @@ Penyelesaian butir terbuka dari Tahap 4–5 dan pelengkap yang tidak mengubah D1
 | K1 (C-02) | Sel `b5_gt_p99` × `psa` hanya 250 user (< 500) | Lima bucket **dipertahankan** sesuai D4. Sel ini ditandai `is_small_segment` oleh D5, rate-nya tidak diinterpretasikan. Tidak ada penggabungan bucket |
 | K2 (C-03) | Family Holm blok waktu (D5 vs D6) | Ukuran family **tetap 4**. Blok 00–05 × `psa` (1 konversi di Tahap 4 → kena D5) dilaporkan sebagai `is_small_segment` dan **tidak diuji**; dalam perhitungan Holm blok tersebut diberi p-value = 1 (tidak pernah ditolak) sehingga koreksi tetap konservatif ($m = 4$). Berlaku serupa untuk segmen kecil lain pada family hari |
 | K3 (C-04) | CI deskriptif per jam (sel `psa` dengan konversi sangat sedikit atau nol) | Interval **Wilson** untuk CR per jam dan per segmen deskriptif. CI selisih untuk primary test tetap Wald tak-pooled (D2) |
-| K4 | Spesifikasi MDE retrospektif (melengkapi D9) | Pendekatan normal untuk dua proporsi independen, $\alpha = 0{,}05$ dua arah, **power 80%**, baseline $p_0$ = CR grup `psa`, ukuran grup = $n_{ad}$ dan $n_{psa}$ final. Dilaporkan dalam poin persentase dan relatif terhadap $p_0$. Implementasi di notebook (statsmodels), diverifikasi silang dengan aproksimasi $(z_{1-\alpha/2} + z_{0{,}8})\sqrt{p_0(1-p_0)(1/n_{ad} + 1/n_{psa})}$. *Observed power* tetap dilarang |
+| K4 | Spesifikasi MDE retrospektif (melengkapi D9) | Pendekatan normal untuk dua proporsi independen, $\alpha = 0{,}05$ dua arah, **power 80%**, baseline $p_0$ = CR grup `psa`, ukuran grup = $n_{ad}$ dan $n_{psa}$ final. Dilaporkan dalam poin persentase dan relatif terhadap $p_0$. Implementasi di SQL DuckDB (`sql/07_ab_testing.sql`, bagian 6; rincian di bagian 6 dokumen ini), diverifikasi silang dengan aproksimasi $(z_{1-\alpha/2} + z_{0{,}8})\sqrt{p_0(1-p_0)(1/n_{ad} + 1/n_{psa})}$ dan pemeriksaan power pada nilai MDE. *Observed power* tetap dilarang |
 | K5 | Relative lift | Dilaporkan sebagai point estimate. Jika CI ditampilkan, memakai pendekatan log risk ratio (Katz) dan hanya deskriptif |
 
 ## 6. Reconciliation Report
@@ -99,13 +99,30 @@ Penyelesaian butir terbuka dari Tahap 4–5 dan pelengkap yang tidak mengubah D1
 
 **Limitations yang terkunci bersama dokumen ini:** tidak ada data biaya (tanpa ROI/ROAS/profit); randomization tidak dapat diverifikasi; grup `psa` kecil (MDE lebih besar, banyak sel segmen `psa` di bawah D5); variabel paparan, hari, dan jam adalah post-treatment; tidak ada timestamp assignment atau konversi; satu eksperimen dalam satu periode.
 
+## 6A. Implementasi Uji Statistik (Tahap 8)
+
+Seluruh uji dijalankan di **DuckDB SQL** (`sql/07_ab_testing.sql`). Definisi statistik D1–D9 dan K1–K5 tidak berubah; bagian ini hanya mencatat rumus dan fungsi yang dipakai.
+
+| Komponen | Rumus / fungsi |
+|---|---|
+| z-test primer (D2) | $z = \dfrac{CR_{ad} - CR_{psa}}{\sqrt{\hat p(1-\hat p)(1/n_{ad} + 1/n_{psa})}}$, $\hat p$ = konversi total / user total (pooled). p-value dua arah $= 2\,Q(|z|)$ |
+| CI 95% selisih (D2) | $(CR_{ad} - CR_{psa}) \pm 1{,}959963984540054 \sqrt{\dfrac{CR_{ad}(1-CR_{ad})}{n_{ad}} + \dfrac{CR_{psa}(1-CR_{psa})}{n_{psa}}}$ |
+| CI relative lift (K5) | log risk ratio (Katz): $\exp\!\big(\ln RR \pm z\sqrt{1/x_{ad} - 1/n_{ad} + 1/x_{psa} - 1/n_{psa}}\big) - 1$ |
+| Chi-square (D2) | $\sum (O-E)^2/E$ dari frekuensi harapan tabel 2×2, tanpa koreksi kontinuitas; p-value $= 2\,Q(\sqrt{\chi^2})$ (df = 1) |
+| Fisher exact (D2) | distribusi hipergeometrik: $\ln P(x) = \ln\binom{K}{x} + \ln\binom{N-K}{n-x} - \ln\binom{N}{n}$ dengan `lgamma`; p-value dua arah = jumlah $P(x)$ untuk tabel yang tidak lebih mungkin daripada tabel teramati (toleransi relatif $10^{-7}$) |
+| MDE (K4) | $\delta = (z_{1-\alpha/2} + z_{0{,}80})\sqrt{\dfrac{p_0(1-p_0)}{n_{psa}} + \dfrac{p_1(1-p_1)}{n_{ad}}}$, $p_1 = p_0 + \delta$, $p_0 = CR_{psa}$; fixed-point 80 iterasi (`list_reduce`), titik awal = aproksimasi $p_1 \approx p_0$ |
+| Fungsi distribusi normal $Q(z) = P(Z > z)$ | Macro SQL `ab_norm_sf`: deret erf untuk $0 \le z < 2{,}5$ dan continued fraction (rasio Mills, kedalaman 300) untuk $z \ge 2{,}5$; $z < 0$ lewat $1 - Q(-z)$ |
+| Konstanta | $z_{0{,}975} = 1{,}959963984540054$, $z_{0{,}80} = 0{,}8416212335729143$ (kuantil normal baku, ditulis sebagai konstanta karena DuckDB tidak punya fungsi kuantil normal) |
+
+**Validasi implementasi** (otomatis setiap skrip dijalankan; `ab_checks`, gate harus `ALL PASS`): macro `ab_norm_sf` dibandingkan dengan 15 nilai acuan eksternal (galat relatif maksimum $2{,}85 \times 10^{-14}$); chi-square = $z^2$; p-value chi-square = p-value z-test; jumlah probabilitas Fisher = 1; residual iterasi MDE; power pada nilai MDE = 80%; MDE vs aproksimasi $p_1 \approx p_0$; z-test tanpa duplikat = z-test primer; konsistensi kesimpulan Fisher dan z-test.
+
 ## 7. Revision Log
 
 Diisi jika definisi KPI, populasi, atau keputusan statistik berubah setelah git tag `kpi-lock`.
 
 | Tanggal | Commit hash | Definisi yang berubah | Alasan | Ditemukan di tahap mana |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-10-14 | HASH_PLACEHOLDER | **Alat implementasi uji statistik:** dari Python (notebook, scipy/statsmodels) ke SQL DuckDB (macro `ab_norm_sf`, `lgamma`, `list_reduce`). Redaksi K4 diperbarui. **Definisi D1–D9 dan K1–K5 tidak berubah** | Keputusan proyek: seluruh analisis memakai DuckDB dan SQL saja. Notebook tidak pernah dijalankan pada data proyek, sehingga tidak ada hasil uji yang bergantung pada alat lama | Tahap 8 |
 
 ## 8. Cara Memverifikasi Lock
 
