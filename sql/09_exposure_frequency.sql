@@ -42,8 +42,10 @@ CREATE OR REPLACE MACRO ab_wilson_half(x, n) AS
            + 1.959963984540054 * 1.959963984540054 / (4.0 * n::DOUBLE * n::DOUBLE))
     / (1.0 + 1.959963984540054 * 1.959963984540054 / n::DOUBLE);
 
-CREATE OR REPLACE MACRO ab_wilson_low(x, n)  AS ab_wilson_center(x, n) - ab_wilson_half(x, n);
-CREATE OR REPLACE MACRO ab_wilson_high(x, n) AS ab_wilson_center(x, n) + ab_wilson_half(x, n);
+CREATE OR REPLACE MACRO ab_wilson_low(x, n)  AS
+    CASE WHEN x = 0 THEN 0.0 ELSE GREATEST(0.0, ab_wilson_center(x, n) - ab_wilson_half(x, n)) END;
+CREATE OR REPLACE MACRO ab_wilson_high(x, n) AS
+    CASE WHEN x = n THEN 1.0 ELSE LEAST(1.0, ab_wilson_center(x, n) + ab_wilson_half(x, n)) END;
 
 -- ----------------------------------------------------------------------------
 -- 1. Sel bucket x grup (dan gabungan ALL): n, konversi, CR, Wilson CI, kontribusi, flag D5
@@ -224,7 +226,7 @@ FROM (
     SELECT 'X07', 'Setiap CR sel berada di dalam interval Wilson-nya (pelanggaran)',
            0.0,
            (SELECT COUNT(*) FROM exposure_bucket_cells
-             WHERE conversion_rate < wilson_low OR conversion_rate > wilson_high)::DOUBLE, 0.0
+             WHERE conversion_rate < wilson_low - 1e-12 OR conversion_rate > wilson_high + 1e-12)::DOUBLE, 0.0
     UNION ALL
     SELECT 'X08', 'Batas Wilson berada di dalam [0, 1] (pelanggaran)',
            0.0,
